@@ -1,0 +1,95 @@
+
+
+.big-map-tooltip {
+	background-color: #FFF;
+	border: solid 1px #CCC;
+	padding: 5px;
+	color: #000;
+	font-size: 12px;
+	font-family: Arial;
+}
+.big-map-post-badge {
+	width: 300px;
+	background-color: #FFF;
+	border: solid 1px #CCC;
+	padding: 5px;
+	margin: 5px;
+}
+.big-map-post-badge a {
+	display: block;
+	text-decoration: none;
+	color: #000;
+	font-size: 12px;
+	font-family: Arial;
+}
+.big-map-post-badge a:hover {
+	text-decoration: underline;
+}
+.big-map-post-badge img {
+	float: left;
+	margin-right: 10px;
+}
+
+.big-map-post-badge .title {
+	font-weight: bold;
+}
+.big-map-post-badge .excerpt {
+	
+}
+.big-map-post-badge .more {
+	font-style: italic;
+}
+.big-map-post-badge .bottom {
+	display:block;
+	clear:both
+}
+
+#big-map-tooltip {
+	z-index: 1000;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+/* "back to blog" link */
+a.big-map-back, a.big-map-back:visited {
+	position: absolute;
+	top: 40px;
+	left: 100px;
+	z-index: 500;
+	display: block;
+	background-color: #FFF;
+	border: solid 1px #CCC;
+	padding: 10px 10px 10px 30px;
+	background: url("back-arrow.png") no-repeat 10px center #FFF;
+	color: #000;
+	font-size: 14px;
+	font-family: Arial;
+	text-decoration: none;
+}
+a.big-map-back:hover {
+	text-decoration: underline;
+}
+
+/* post page style when viewed in iframe */
+
+.post-only #header, .post-only #primary, .post-only #footer, .post-only #nav-above, .post-only #nav-below {
+	display: none;
+}
+
+.post-only,
+.post-only #wrapper,
+.post-only #main,
+.post-only #container,
+.post-only #content,
+.post-only #comments {
+	background: none;
+	filter: none;
+	margin: 0;
+	padding: 0;
+	width: 640px;
+}
+
+.post-only .post {
+	padding: 10px;
+}
