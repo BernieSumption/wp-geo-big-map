@@ -8,6 +8,8 @@ Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place t
 
 == Description ==
 
+Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
+
 The [big_map] shortcode accepts arguments like so:
 
 [big_map numberposts="10" author_name="bernie" tag="happy-days"]
@@ -27,11 +29,9 @@ WP-Geo Big Map groups posts together if they have the same latitude and longitud
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
+Either install through the wordpress "Add Plugin" page (search for "big map") or:
 
-e.g.
-
-1. Upload the `wp-geo-big-map` folder to your `/wp-content/plugins/` directory
+1. Upload the wp-geo-big-map` folder to your `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Screenshots ==

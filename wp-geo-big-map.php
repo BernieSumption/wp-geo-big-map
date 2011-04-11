@@ -9,7 +9,8 @@ Version: 1
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
-Tested up to: 3.1
+Tested up to: 3.1.1
+License: FreeBSD license
 */
 
 
@@ -83,10 +84,6 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 		'order' => 'DESC'
 	);
 	$bigMapShortcodeAtts = wp_parse_args($atts, $defaults);
-	
-	var_dump($atts);
-	
-	var_dump($bigMapShortcodeAtts);
 	
 	add_action('wp_footer', 'do_shortcode_wp_geo_big_map');
 }

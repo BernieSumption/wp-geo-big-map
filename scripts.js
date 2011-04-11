@@ -1,6 +1,3 @@
-//TODO:
-// 2. fix the grouping thing, shouldn't just be first tag
-// 3. add basic parameters to shortcode
 
 function MapLocation(lat, lng, badge_html, link) {
 	this.lat = lat;
@@ -13,9 +10,15 @@ function MapLocation(lat, lng, badge_html, link) {
 // display a full page map.
 function wp_geo_big_map(locations) {
 
+	var el = document.getElementById("travel_map");
+	
+	if (!window.GBrowserIsCompatible) {
+		alert("Can't display big map because Google Maps is not available. Is the WP Geo plugin installed?");
+		return;
+	}
+
 	if ( GBrowserIsCompatible() ) {
 	
-		var el = document.getElementById("travel_map");
 		
 		// remove rest of page contents
 		el.parentNode.removeChild(el);
@@ -118,7 +121,8 @@ function wp_geo_big_map(locations) {
 			el.style.border = "none";
 			marker.openInfoWindow(el, {maxWidth: 1100});
 			var f = function() {
-				el.innerHTML = '<iframe src="' + link + '?postonly=true" width="660" height="550" frameborder="0"></iframe>';
+				var qm_or_amp = link.indexOf("?") == -1 ? "?" : "&";
+				el.innerHTML = '<iframe src="' + link + qm_or_amp + 'postonly=true" width="660" height="550" frameborder="0"></iframe>';
 			};
 			var ver = getInternetExplorerVersion();
 			if (ver >= 6 && ver < 8) {
