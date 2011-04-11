@@ -27,6 +27,18 @@ The full list of attributes accepted is:
 
 WP-Geo Big Map groups posts together if they have the same latitude and longitude. If you want to ensure that posts are grouped together, make sure that the map locations are *identical*.
 
+= Customising WP-Geo Big Map =
+
+*   You can override the CSS styles in your own theme's style.css
+*   You can define a new `function get_big_map_post_badge($single)` in your theme's functions.php in order to control the look of the post badge beyond what is possible with CSS
+
+= Using WP-Geo Big Map with other themes =
+
+WP-Geo Big Map is designed to work with the Twenty Ten theme. When posts are viewed within an iframe, the CSS class "post-only" is added to the HTML body tag. The WP-Geo Big Map stylesheet contains rules that hide navigation elements and change the page width.
+
+If you use another theme, you may have to change the CSS rules to hide unwranted page elements when in the map iframes.
+
+
 == Installation ==
 
 Either install through the wordpress "Add Plugin" page (search for "big map") or:
@@ -44,16 +56,6 @@ Either install through the wordpress "Add Plugin" page (search for "big map") or
 
 = 1.0 =
 *   first version
-
-== Customising WP-Geo Big Map ==
-
-*   You can override the CSS styles in your own theme's style.css
-*   You can define a new `function get_big_map_post_badge($single)` in your theme's functions.php in order to control the look of the post badge beyond what is possible with CSS
-
-== Using WP-Geo Big Map with other themes ==
-
-WP-Geo Big Map is designed to work with the Twenty Ten theme. When posts are viewed within an iframe, the CSS class "post-only" is added to the HTML body tag. The WP-Geo Big Map stylesheet contains rules that hide navigation elements and change the page width.
-
 If you have a custom theme that uses different element IDs for navigation elements, you may need to define new rules to hide navigation elements in your theme's style.css.
 
 
