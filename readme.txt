@@ -1,4 +1,4 @@
-=== WP-Geo Big Map ===
+=== WP Geo Big Map ===
 Contributors: berniecode
 Tags: geo, wp-geo, map
 Requires at least: 3.1
