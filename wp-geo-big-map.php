@@ -5,7 +5,7 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1
+Version: 1.1
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
@@ -64,7 +64,7 @@ function do_add_postonly_body_class($classes) {
 }
 
 //
-// Add [full_screen_map] shortcode
+// Add [big_map] shortcode
 //
 
 global $bigMapShortcodeAtts;
@@ -75,6 +75,7 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 	global $bigMapShortcodeAtts;
 	
 	$defaults = array(
+		'lines' => true,
 		'backLink' => get_home_url(),
 		'backText' => 'back to blog',
 		'combined_text' => 'posts - click to view',
@@ -120,17 +121,15 @@ function do_shortcode_wp_geo_big_map() {
 	$travelMapPoints .= "\n\t\t]";
 	
 	$backLink = big_map_js_string_literal('<a class="big-map-back" href="' . $atts['backLink'] . '">' . $atts['backText'] . '</a>');	
-	$combined_text = big_map_js_string_literal($atts['combined_text']);	
+	$combined_text = big_map_js_string_literal($atts['combined_text']);
+	$polyLines = $atts['lines'] ? "true" : "false";
 	
 	echo <<<END
 		<div id="travel_map" class="wpgeo_map" style="width:100%; height:100%;"></div>
 		<script type="text/javascript">
 		<!--
 		
-		var bigMapBackLink = {$backLink};
-		var bigMapCombinedText = {$combined_text};
-		
-		wp_geo_big_map({$travelMapPoints});
+		wp_geo_big_map({$travelMapPoints}, {$combined_text}, {$backLink}, {$polyLines});
 		
 		-->
 		</script>

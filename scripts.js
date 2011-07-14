@@ -8,7 +8,7 @@ function MapLocation(lat, lng, badge_html, link) {
 }
 
 // display a full page map.
-function wp_geo_big_map(locations) {
+function wp_geo_big_map(locations, combinedText, backLink, polyLines) {
 
 	var el = document.getElementById("travel_map");
 	
@@ -33,7 +33,7 @@ function wp_geo_big_map(locations) {
 		document.body.parentNode.style.height = "100%";
 		document.body.parentNode.style.overflow = "hidden";
 		
-		jQuery("body").append(bigMapBackLink);
+		jQuery("body").append(backLink);
 		
 		jQuery("body").append('<div id="big-map-tooltip"></div>');
 		window.bigMapTooltip = jQuery("#big-map-tooltip");
@@ -73,7 +73,7 @@ function wp_geo_big_map(locations) {
 						count ++;
 					}
 				}
-				var badgeHtml = '<div class="big-map-tooltip">' + count + " " + bigMapCombinedText + "</div>";
+				var badgeHtml = '<div class="big-map-tooltip">' + count + " " + combinedText + "</div>";
 				var marker = createBigMapMarker(map, center, G_DEFAULT_ICON, badgeHtml);
 				addTagListPopup(marker, location.tag);
 			} else {
@@ -84,8 +84,10 @@ function wp_geo_big_map(locations) {
 			points[points.length] = center;
 			bounds.extend(center);
 		}
-		var polyline = new GPolyline(points, "#FFFFFF", 3, 0.7);
-		map.addOverlay(polyline);
+		if (polyLines) {
+			var polyline = new GPolyline(points, "#FFFFFF", 3, 0.7);
+			map.addOverlay(polyline);
+		}
 		zoom = map.getBoundsZoomLevel(bounds);
 		map.setCenter(bounds.getCenter(), zoom);
 	}
@@ -133,39 +135,6 @@ function wp_geo_big_map(locations) {
 			}
 		}
 	}
-	
-	// monkey patch WP-Geo to use HTML tooltips.
-	Tooltip.prototype.show = function() {
-		jQuery('#tooltip2').html(this.text_);
-		jQuery('#tooltip2').show();
-			
-		var left = Tooltip_mouse_x - (jQuery('#tooltip2').width() / 3);
-		var top = Tooltip_mouse_y - 25 - jQuery('#tooltip2').height();
-		
-		if (left < 5)
-			left = 5;
-		if (top < 5)
-			top = 5;
-		
-		jQuery('#tooltip2').css('left', left);
-		jQuery('#tooltip2').css('top', top);
-	}
-	
-	// fix WP-Geo tooltip positioning bug
-	jQuery(document).ready(function() {
-		jQuery("body").mousemove(function(e)
-		{
-			var top = 5;	
-			if (jQuery('#tooltip2').css('display') != 'none')
-			{
-				var top = e.pageY - 25 - jQuery('#tooltip2').height();
-				if (top < 5) {
-					top = e.pageY + 25;
-				}
-			}
-			jQuery('#tooltip2').css('top', top);
-		});
-	});
 	
 	function getInternetExplorerVersion() {
 	   var rv = -1;

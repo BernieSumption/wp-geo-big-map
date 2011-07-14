@@ -18,6 +18,7 @@ The above will show the most recent 10 posts by the user "bernie" that are tagge
 
 The full list of attributes accepted is:
 
+*   lines: set to "0" to hide polylines between pins, default is "1" which shows lines
 *   backLink: the URL of the back link, default is the blog home page
 *   backText: the text of the back link, default is "back to blog"
 *   combined_text: the text to show when multiple posts have been combined into one marker. This text is appended to the number of posts at that location. Default is "posts - click to view",  causing the tooltip to read e.g. "8 posts - click to view"
