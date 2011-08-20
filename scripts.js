@@ -8,7 +8,7 @@ function MapLocation(lat, lng, badge_html, link) {
 }
 
 // display a full page map.
-function wp_geo_big_map(locations, combinedText, backLink, polyLines) {
+function wp_geo_big_map(conf) {
 
 	var el = document.getElementById("travel_map");
 	
@@ -33,7 +33,7 @@ function wp_geo_big_map(locations, combinedText, backLink, polyLines) {
 		document.body.parentNode.style.height = "100%";
 		document.body.parentNode.style.overflow = "hidden";
 		
-		jQuery("body").append(backLink);
+		jQuery("body").append(conf.backLink);
 		
 		jQuery("body").append('<div id="big-map-tooltip"></div>');
 		window.bigMapTooltip = jQuery("#big-map-tooltip");
@@ -42,8 +42,8 @@ function wp_geo_big_map(locations, combinedText, backLink, polyLines) {
 		});
 		
 		var tagCounts = {}; // map of "lat,long" to 
-		for (var i=0; i<locations.length; i++) {
-			var location = locations[i];
+		for (var i=0; i<conf.locations.length; i++) {
+			var location = conf.locations[i];
 			if (!tagCounts[location.tag]) {
 				tagCounts[location.tag] = 1;
 			} else {
@@ -59,8 +59,8 @@ function wp_geo_big_map(locations, combinedText, backLink, polyLines) {
 		map.addControl(new GLargeMapControl());
 		var points = [];
 		var drawnTags = {};
-		for (var i=0; i<locations.length; i++) {
-			var location = locations[i];
+		for (var i=0; i<conf.locations.length; i++) {
+			var location = conf.locations[i];
 			var center = new GLatLng(location.lat, location.lng);
 			if (location.tag && tagCounts[location.tag] > 1) {
 				if (drawnTags[location.tag]) {
@@ -68,12 +68,12 @@ function wp_geo_big_map(locations, combinedText, backLink, polyLines) {
 				}
 				drawnTags[location.tag] = true;
 				var count = 0;
-				for (var j=0; j<locations.length; j++) {
-					if (locations[j].tag == location.tag) {
+				for (var j=0; j<conf.locations.length; j++) {
+					if (conf.locations[j].tag == location.tag) {
 						count ++;
 					}
 				}
-				var badgeHtml = '<div class="big-map-tooltip">' + count + " " + combinedText + "</div>";
+				var badgeHtml = '<div class="big-map-tooltip">' + count + " " + conf.combinedText + "</div>";
 				var marker = createBigMapMarker(map, center, G_DEFAULT_ICON, badgeHtml);
 				addTagListPopup(marker, location.tag);
 			} else {
@@ -84,19 +84,22 @@ function wp_geo_big_map(locations, combinedText, backLink, polyLines) {
 			points[points.length] = center;
 			bounds.extend(center);
 		}
-		if (polyLines) {
+		if (conf.polyLines) {
 			var polyline = new GPolyline(points, "#FFFFFF", 3, 0.7);
 			map.addOverlay(polyline);
 		}
 		zoom = map.getBoundsZoomLevel(bounds);
-		map.setCenter(bounds.getCenter(), zoom);
+		map.setCenter(conf.center || bounds.getCenter(), conf.zoom || zoom);
+		if (conf.mapType && window[conf.mapType]) {
+			map.setMapType(window[conf.mapType]);
+		}
 	}
 	
 	function addTagListPopup(marker, tag) {
 		GEvent.addListener(marker, "click", function(overlay, latlong) {
 			var badgeHtml = [];
-			for (var i=0; i<locations.length; i++) {
-				var location = locations[i];
+			for (var i=0; i<conf.locations.length; i++) {
+				var location = conf.locations[i];
 				var pointTag = location.tag;
 				if (pointTag == tag) {
 					badgeHtml.push(location.badge_html);

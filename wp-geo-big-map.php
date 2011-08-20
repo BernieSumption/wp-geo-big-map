@@ -5,7 +5,7 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1.1
+Version: 1.2
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
@@ -24,10 +24,12 @@ if (!function_exists('get_big_map_post_badge')) {
 	function get_big_map_post_badge($single) {
 
 		$imgtag = "";
-		$img_id = get_post_thumbnail_id($single->ID);
-		if ($img_id) {
-			$img = wp_get_attachment_image_src($img_id, "thumbnail");
-			$imgtag = "<img src=\"{$img[0]}\" width=\"{$img[1]}\" height=\"{$img[2]}\" />";
+		if (function_exists('get_post_thumbnail_id')) {
+			$img_id = get_post_thumbnail_id($single->ID);
+			if ($img_id) {
+				$img = wp_get_attachment_image_src($img_id, "thumbnail");
+				$imgtag = "<img src=\"{$img[0]}\" width=\"{$img[1]}\" height=\"{$img[2]}\" />";
+			}
 		}
 		
 		$date = date('jS M', strtotime($single->post_date));
@@ -76,17 +78,22 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 	
 	$defaults = array(
 		'lines' => true,
-		'backLink' => get_home_url(),
-		'backText' => 'back to blog',
+		'backlink' => get_home_url(),
+		'backtext' => 'back to blog',
 		'combined_text' => 'posts - click to view',
-		
 		'numberposts' => -1,
 		'orderby' => 'post_date',
-		'order' => 'DESC'
+		'order' => 'DESC',
+		'lat' => false,
+		'long' => false,
+		'zoom' => false,
+		'maptype' => false
 	);
 	$bigMapShortcodeAtts = wp_parse_args($atts, $defaults);
 	
 	add_action('wp_footer', 'do_shortcode_wp_geo_big_map');
+	
+	return "Big Map can't be displayed, possibly because JavaScript is turned off.";
 }
 
 function do_shortcode_wp_geo_big_map() {
@@ -120,16 +127,27 @@ function do_shortcode_wp_geo_big_map() {
 	}
 	$travelMapPoints .= "\n\t\t]";
 	
-	$backLink = big_map_js_string_literal('<a class="big-map-back" href="' . $atts['backLink'] . '">' . $atts['backText'] . '</a>');	
+	$backLink = big_map_js_string_literal('<a class="big-map-back" href="' . $atts['backlink'] . '">' . $atts['backtext'] . '</a>');	
 	$combined_text = big_map_js_string_literal($atts['combined_text']);
 	$polyLines = $atts['lines'] ? "true" : "false";
+	$center = is_numeric($atts['lat']) && is_numeric($atts['long']) ? "new GLatLng({$atts['lat']}, {$atts['long']})" : "false";
+	$zoom = is_numeric($atts['zoom']) ? round($atts['zoom']) : "false";
+	$mapType = big_map_js_string_literal($atts['maptype']);
 	
 	echo <<<END
 		<div id="travel_map" class="wpgeo_map" style="width:100%; height:100%;"></div>
 		<script type="text/javascript">
 		<!--
-		
-		wp_geo_big_map({$travelMapPoints}, {$combined_text}, {$backLink}, {$polyLines});
+		// locations, combinedText, backLink, polyLines
+		wp_geo_big_map({
+			locations: {$travelMapPoints},
+			combinedText: {$combined_text},
+			backLink: {$backLink},
+			polyLines: {$polyLines},
+			center: {$center},
+			zoom: {$zoom},
+			mapType: {$mapType}
+		});
 		
 		-->
 		</script>

@@ -2,7 +2,7 @@
 Contributors: berniecode
 Tags: geo, wp-geo, map
 Requires at least: 3.1
-Tested up to: 3.1
+Tested up to: 3.2.1
 
 Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
 
@@ -22,6 +22,9 @@ The full list of attributes accepted is:
 *   backLink: the URL of the back link, default is the blog home page
 *   backText: the text of the back link, default is "back to blog"
 *   combined_text: the text to show when multiple posts have been combined into one marker. This text is appended to the number of posts at that location. Default is "posts - click to view",  causing the tooltip to read e.g. "8 posts - click to view"
+* lat, long: the latitude and longitude of the map center. The default behaviour is to center the map in the middle of the currently displayed points. Both of these properties must be provided to work correctly.
+* zoom: an integer controlling the map scale. 3 shows most of the world, 10 shows a large city. The default setting is to automatically choose the highest zoom level that shows all the points on one screen.
+* mapType: a default map type. Available values are: G_NORMAL_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP
 *   Any of the parameters accepted by [get_posts()](http://codex.wordpress.org/Function_Reference/get_posts) which in turn accepts the parameters accepted by [WP_Query()](http://codex.wordpress.org/Function_Reference/WP_Query). These parameters control which posts are displayed on the map.
 
 = A note on grouping points =
