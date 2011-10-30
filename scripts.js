@@ -56,7 +56,6 @@ function wp_geo_big_map(conf) {
 		map = new GMap2(el, {mapTypes: [G_PHYSICAL_MAP, G_HYBRID_MAP]});
 		var ui = map.getDefaultUI();
 		map.setUI(ui);
-		map.addControl(new GLargeMapControl());
 		var points = [];
 		var drawnTags = {};
 		for (var i=0; i<conf.locations.length; i++) {
