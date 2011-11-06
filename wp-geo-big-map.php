@@ -13,9 +13,6 @@ Tested up to: 3.1.1
 License: FreeBSD license
 */
 
-
-
-
 //
 // To control the appearance of the post badge beyond what is possible with CSS, define an
 // alternative version of this function in your theme functions.php
@@ -87,7 +84,8 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 		'lat' => false,
 		'long' => false,
 		'zoom' => false,
-		'maptype' => false
+		'maptype' => false,
+		'current_user_only' => false
 	);
 	$bigMapShortcodeAtts = wp_parse_args($atts, $defaults);
 	
@@ -106,6 +104,12 @@ function do_shortcode_wp_geo_big_map() {
 	
 	$wpgeo_map_id++;
 	$id = 'wpgeo_map_id_' . $wpgeo_map_id;
+	
+	var_dump(get_current_user_id());
+	
+	if ($atts['current_user_only']) {
+		$atts['author'] = (int) get_current_user_id();
+	}
 	
 	$posts = get_posts($atts);
 	

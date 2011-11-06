@@ -25,6 +25,7 @@ The full list of attributes accepted is:
 * lat, long: the latitude and longitude of the map center. The default behaviour is to center the map in the middle of the currently displayed points. Both of these properties must be provided to work correctly.
 * zoom: an integer controlling the map scale. 3 shows most of the world, 10 shows a large city. The default setting is to automatically choose the highest zoom level that shows all the points on one screen.
 * mapType: a default map type. Available values are: G_NORMAL_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP
+* current_user_only: set to "1" to display only posts from the currently logged in user. If no user is logged in, the map will be empty.
 *   Any of the parameters accepted by [get_posts()](http://codex.wordpress.org/Function_Reference/get_posts) which in turn accepts the parameters accepted by [WP_Query()](http://codex.wordpress.org/Function_Reference/WP_Query). These parameters control which posts are displayed on the map.
 
 = A note on grouping points =
