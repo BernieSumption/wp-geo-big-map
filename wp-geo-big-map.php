@@ -5,7 +5,7 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1.3
+Version: 1.3.1
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
