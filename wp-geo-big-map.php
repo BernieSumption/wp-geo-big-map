@@ -49,10 +49,6 @@ END;
 wp_enqueue_style('wp-geo-big-map-style', plugins_url('style.css', __FILE__));
 wp_enqueue_script('wp-geo-big-map-scripts', plugins_url('scripts.js', __FILE__));
 
-//
-// Add post-only CSS class to HTML body element if postonly=true is specified in the query string
-//
-
 if (isset($_GET['postonly']) && $_GET['postonly'] == "true") {
 	wp_enqueue_script('wp-geo-big-map-hide-contents', plugins_url('hide-contents.js', __FILE__));
 }
@@ -110,16 +106,21 @@ function do_shortcode_wp_geo_big_map() {
 	$travelMapPoints = "[";
 	$isFirst = true;
 	foreach ( $posts as $post ) {
+		$marker = get_post_meta($post->ID, WPGEO_MARKER_META, true);
+		if ($marker == "") {
+			$marker = "big_map_default_icon";
+		} else {
+			$marker = "wpgeo_icon_$marker";
+		}
 		$latitude = get_post_meta($post->ID, WPGEO_LATITUDE_META, true);
 		$longitude = get_post_meta($post->ID, WPGEO_LONGITUDE_META, true);
 		if ( is_numeric($latitude) && is_numeric($longitude) ) {
-			$icon = apply_filters( 'wpgeo_marker_icon', 'wpgeo_icon_small', $post, 'wpgeo_map' );
 			if (!$isFirst) {
 				$travelMapPoints .= ",";
 			}
 			$isFirst = false;
 			
-			$travelMapPoints .= "\n\t\t\tnew MapLocation($latitude, $longitude, " . big_map_js_string_literal(get_big_map_post_badge($post)) . ", " . big_map_js_string_literal(get_permalink($post->ID)) . ")";
+			$travelMapPoints .= "\n\t\t\tnew MapLocation($latitude, $longitude, " . big_map_js_string_literal(get_big_map_post_badge($post)) . ", " . big_map_js_string_literal(get_permalink($post->ID)) . ", " . big_map_js_string_literal($marker) . ")";
 		}
 	}
 	$travelMapPoints .= "\n\t\t]";

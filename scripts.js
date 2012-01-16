@@ -1,10 +1,11 @@
 
-function MapLocation(lat, lng, badge_html, link) {
+function MapLocation(lat, lng, badge_html, link, marker) {
 	this.lat = lat;
 	this.lng = lng;
 	this.badge_html = badge_html;
 	this.link = link;
 	this.tag = lat + "," + lng;
+	this.marker = marker
 }
 
 // display a full page map.
@@ -27,10 +28,11 @@ function wp_geo_big_map(conf) {
 		document.body.appendChild(el);
 		
 		// set full screen viewport
-		document.body.style.height = "100%";
-		document.body.style.overflow = "hidden";
-		document.body.parentNode.style.height = "100%";
-		document.body.parentNode.style.overflow = "hidden";
+		var props = {height: "100%", overflow: "hidden", padding: "0px", margin: "0px"};
+		for (var prop in props) {
+			document.body.style[prop] = props[prop];
+			document.body.parentNode.style[prop] = props[prop];
+		}
 		
 		jQuery("body").append(conf.backLink);
 		
@@ -60,6 +62,10 @@ function wp_geo_big_map(conf) {
 		for (var i=0; i<conf.locations.length; i++) {
 			var location = conf.locations[i];
 			var center = new GLatLng(location.lat, location.lng);
+			var icon = window[location.marker] || G_DEFAULT_ICON;
+			if (!icon.infoWindowAnchor) {
+				icon.infoWindowAnchor = new GPoint(icon.iconSize.width / 2, -10);
+			}
 			if (location.tag && tagCounts[location.tag] > 1) {
 				if (drawnTags[location.tag]) {
 					continue;
@@ -72,11 +78,10 @@ function wp_geo_big_map(conf) {
 					}
 				}
 				var badgeHtml = '<div class="big-map-tooltip">' + count + " " + conf.combinedText + "</div>";
-				var marker = createBigMapMarker(map, center, G_DEFAULT_ICON, badgeHtml);
+				var marker = createBigMapMarker(map, center, icon, badgeHtml);
 				addTagListPopup(marker, location.tag);
 			} else {
-				//var icon = i == 0 ? G_DEFAULT_ICON : wpgeo_icon_small
-				var marker = createBigMapMarker(map, center, G_DEFAULT_ICON, location.badge_html);
+				var marker = createBigMapMarker(map, center, icon, location.badge_html);
 				GEvent.addListener(marker, "click", makeIframePopupCallback(marker, location.link));
 			}
 			points[points.length] = center;
