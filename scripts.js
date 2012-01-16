@@ -18,7 +18,6 @@ function wp_geo_big_map(conf) {
 	}
 
 	if ( GBrowserIsCompatible() ) {
-	
 		
 		// remove rest of page contents
 		el.parentNode.removeChild(el);
@@ -148,6 +147,17 @@ function wp_geo_big_map(conf) {
 			 rv = parseFloat( RegExp.$1 );
 	   }
 	   return rv;
+	}
+	
+	function hideNonAncestorElements(el) {
+		var parent = el.parentNode;
+		if (!parent) return;
+		for (var i=0; i<parent.childNodes; i++) {
+			if (parent.childNodes[i] != el) {
+				parent.childNodes[i].style.display = "none";
+			}
+		}
+		hideNonAncestorElements(parent);
 	}
 }
 

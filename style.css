@@ -70,26 +70,3 @@ a.big-map-back, a.big-map-back:visited {
 a.big-map-back:hover {
 	text-decoration: underline;
 }
-
-/* post page style when viewed in iframe */
-
-.post-only #header, .post-only #primary, .post-only #footer, .post-only #nav-above, .post-only #nav-below {
-	display: none;
-}
-
-.post-only,
-.post-only #wrapper,
-.post-only #main,
-.post-only #container,
-.post-only #content,
-.post-only #comments {
-	background: none;
-	filter: none;
-	margin: 0;
-	padding: 0;
-	width: 640px;
-}
-
-.post-only .post {
-	padding: 10px;
-}

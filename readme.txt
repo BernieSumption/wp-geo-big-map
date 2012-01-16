@@ -39,9 +39,7 @@ WP-Geo Big Map groups posts together if they have the same latitude and longitud
 
 = Using WP-Geo Big Map with other themes =
 
-WP-Geo Big Map is designed to work with the Twenty Ten theme. When posts are viewed within an iframe, the CSS class "post-only" is added to the HTML body tag. The WP-Geo Big Map stylesheet contains rules that hide navigation elements and change the page width.
-
-If you use another theme, you may have to change the CSS rules to hide unwanted page elements when in the map iframes.
+WP-Geo Big Map has been tested with the Twenty Ten and Twenty Eleven themes that ship with WordPress. When posts are viewed within an iframe, the parameter postonly=true is added to the URL. This triggers JavaScript that hides everything except the post. In order to be compatible with this process, your theme must ensure that the post content is inside the first element on the page with the CSS class "post".
 
 == Installation ==
 
