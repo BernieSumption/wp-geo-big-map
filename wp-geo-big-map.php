@@ -57,15 +57,17 @@ if (isset($_GET['postonly']) && $_GET['postonly'] == "true") {
 // Add [big_map] shortcode
 //
 
-global $bigMapShortcodeAtts;
+global $big_map_shortcode_atts, $big_map_show_days;
 
 add_shortcode('big_map', 'shortcode_wp_geo_big_map');
 
 function shortcode_wp_geo_big_map($atts, $content = null) {
-	global $bigMapShortcodeAtts;
+	global $big_map_shortcode_atts;
 	
 	$defaults = array(
 		'lines' => true,
+		'show_days' => 0,
+		'fade_old_posts_to' => false,
 		'backlink' => get_home_url(),
 		'backtext' => 'back to blog',
 		'combined_text' => 'posts - click to view',
@@ -78,7 +80,7 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 		'maptype' => false,
 		'current_user_only' => false
 	);
-	$bigMapShortcodeAtts = wp_parse_args($atts, $defaults);
+	$big_map_shortcode_atts = wp_parse_args($atts, $defaults);
 	
 	add_action('wp_footer', 'do_shortcode_wp_geo_big_map');
 	
@@ -86,12 +88,12 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 }
 
 function do_shortcode_wp_geo_big_map() {
-	global $wpgeo, $wpgeo_map_id, $bigMapShortcodeAtts;
+	global $wpgeo, $wpgeo_map_id, $big_map_shortcode_atts, $big_map_show_days;
 	if (is_feed()) {
 		return '';
 	}
 	
-	$atts = $bigMapShortcodeAtts;
+	$atts = $big_map_shortcode_atts;
 	
 	$wpgeo_map_id++;
 	$id = 'wpgeo_map_id_' . $wpgeo_map_id;
@@ -100,7 +102,25 @@ function do_shortcode_wp_geo_big_map() {
 		$atts['author'] = (int) get_current_user_id();
 	}
 	
+	// if show_days filter on posts newer than show_days and return days_old field in response
+	$big_map_show_days = (int) $atts['show_days'];
+	$fade_to = false;
+	if ($big_map_show_days > 0) {
+		add_filter( 'posts_where', 'big_map_add_posts_where' );
+		add_filter( 'posts_fields', 'big_map_add_posts_fields' );
+		$atts['suppress_filters'] = false;
+		$fade_to = $atts['fade_old_posts_to'];
+		if (is_numeric($fade_to) && $fade_to < 1) {
+			$fade_to = max($fade_to, 0);
+		}
+	}
+	
+	$atts['includes'] = 'post_date as foo';
+	
 	$posts = get_posts($atts);
+	
+	remove_filter( 'posts_where', 'big_map_add_posts_where' );
+	remove_filter( 'posts_fields', 'big_map_add_posts_fields' );
 	
 	// generate array holding posts
 	$travelMapPoints = "[";
@@ -129,11 +149,19 @@ function do_shortcode_wp_geo_big_map() {
 			}
 			$isFirst = false;
 			
+			if (is_numeric($fade_to)) {
+				$proportion_old = ($big_map_show_days - $post->days_old) / $big_map_show_days;
+				$alpha = $fade_to + ($proportion_old * (1-$fade_to));
+			} else {
+				$alpha = 1;
+			}
+			
 			$travelMapPoints .= "\n\t\t\tnew MapLocation({$post->ID}, $latitude, $longitude, "
 				. big_map_js_string_literal(get_big_map_post_badge($post)) . ", "
 				. big_map_js_string_literal(get_permalink($post->ID)) . ", "
 				. big_map_js_string_literal($marker) . ", "
-				. $post_line_js . ")";
+				. $post_line_js . ", "
+				. $alpha . ")";
 		}
 	}
 	$travelMapPoints .= "\n\t\t]";
@@ -163,6 +191,18 @@ function do_shortcode_wp_geo_big_map() {
 		-->
 		</script>
 END;
+}
+
+// Create a new filtering function that will add our where clause to the query
+function big_map_add_posts_where( $where = '' ) {
+	global $big_map_show_days;
+	$where .= " AND DATEDIFF(NOW(), post_date) < $big_map_show_days";
+	return $where;
+}
+function big_map_add_posts_fields( $fields = '' ) {
+	global $big_map_show_days;
+	$fields .= ", DATEDIFF(NOW(), post_date) as days_old";
+	return $fields;
 }
 
 function big_map_js_string_literal($string) {
