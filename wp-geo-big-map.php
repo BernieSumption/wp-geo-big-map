@@ -5,11 +5,11 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1.3.2
+Version: 1.3.3
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
-Tested up to: 3.1.1
+Tested up to: 3.3.1
 License: FreeBSD license
 */
 
@@ -112,6 +112,15 @@ function do_shortcode_wp_geo_big_map() {
 		} else {
 			$marker = "wpgeo_icon_$marker";
 		}
+		// line_to_post command must be e.g. "350, #FF0000" for a red line to post 350
+		$post_line = get_post_meta($post->ID, "line_to_post", true);
+		if ($post_line && preg_match("/(\\d+)[\\s,]*#?([0-9a-fA-F]{6})?/", $post_line, $matches)) {
+			$line_to_id = (int) $matches[1];
+			$line_to_color = count($matches) > 2 ? $matches[2] : "000000";
+			$post_line_js = "{id: $line_to_id, color: '#$line_to_color'}";
+		} else {
+			$post_line_js = "null";
+		}
 		$latitude = get_post_meta($post->ID, WPGEO_LATITUDE_META, true);
 		$longitude = get_post_meta($post->ID, WPGEO_LONGITUDE_META, true);
 		if ( is_numeric($latitude) && is_numeric($longitude) ) {
@@ -120,7 +129,11 @@ function do_shortcode_wp_geo_big_map() {
 			}
 			$isFirst = false;
 			
-			$travelMapPoints .= "\n\t\t\tnew MapLocation($latitude, $longitude, " . big_map_js_string_literal(get_big_map_post_badge($post)) . ", " . big_map_js_string_literal(get_permalink($post->ID)) . ", " . big_map_js_string_literal($marker) . ")";
+			$travelMapPoints .= "\n\t\t\tnew MapLocation({$post->ID}, $latitude, $longitude, "
+				. big_map_js_string_literal(get_big_map_post_badge($post)) . ", "
+				. big_map_js_string_literal(get_permalink($post->ID)) . ", "
+				. big_map_js_string_literal($marker) . ", "
+				. $post_line_js . ")";
 		}
 	}
 	$travelMapPoints .= "\n\t\t]";

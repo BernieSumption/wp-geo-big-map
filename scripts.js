@@ -1,11 +1,13 @@
 
-function MapLocation(lat, lng, badge_html, link, marker) {
+function MapLocation(id, lat, lng, badge_html, link, marker, line_to_post) {
+	this.id = id;
 	this.lat = lat;
 	this.lng = lng;
 	this.badge_html = badge_html;
 	this.link = link;
 	this.tag = lat + "," + lng;
 	this.marker = marker
+	this.line_to_post = line_to_post;
 }
 
 // display a full page map.
@@ -59,8 +61,10 @@ function wp_geo_big_map(conf) {
 		map.setUI(ui);
 		var points = [];
 		var drawnTags = {};
+		var postsById = {};
 		for (var i=0; i<conf.locations.length; i++) {
 			var location = conf.locations[i];
+			postsById[location.id] = location;
 			var center = new GLatLng(location.lat, location.lng);
 			var icon = window[location.marker] || G_DEFAULT_ICON;
 			if (!icon.infoWindowAnchor) {
@@ -90,6 +94,16 @@ function wp_geo_big_map(conf) {
 		if (conf.polyLines) {
 			var polyline = new GPolyline(points, "#FFFFFF", 3, 0.7);
 			map.addOverlay(polyline);
+		}
+		for (var i=0; i<conf.locations.length; i++) {
+			var location = conf.locations[i];
+			if (location.line_to_post) {
+				var target = postsById[location.line_to_post.id]
+				if (target && target.id != location.id) {
+					var points =  [new GLatLng(location.lat, location.lng), new GLatLng(target.lat, target.lng)]
+					map.addOverlay(new GPolyline(points, location.line_to_post.color, 3, 0.7));
+				}
+			}
 		}
 		zoom = map.getBoundsZoomLevel(bounds);
 		map.setCenter(conf.center || bounds.getCenter(), conf.zoom || zoom);
@@ -152,17 +166,6 @@ function wp_geo_big_map(conf) {
 			 rv = parseFloat( RegExp.$1 );
 	   }
 	   return rv;
-	}
-	
-	function hideNonAncestorElements(el) {
-		var parent = el.parentNode;
-		if (!parent) return;
-		for (var i=0; i<parent.childNodes; i++) {
-			if (parent.childNodes[i] != el) {
-				parent.childNodes[i].style.display = "none";
-			}
-		}
-		hideNonAncestorElements(parent);
 	}
 }
 

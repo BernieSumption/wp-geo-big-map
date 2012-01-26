@@ -32,6 +32,10 @@ The full list of attributes accepted is:
 
 WP-Geo Big Map groups posts together if they have the same latitude and longitude. If you want to ensure that posts are grouped together, make sure that the map locations are *identical*.
 
+= Drawing lines between two posts =
+
+To draw a line between posts, first make a note of the post ID you want to link *to*. You can get this ID by editing the post and copying the number out of the URL. Then edit the post you want to link *from*. In this post, create a new custom field with the name "line_to_post". Enter the post id as a value. Optionally, you can enter the line colour using HTML color codes. For example, to draw a red line to post 350, enter a value of "350, FF0000"
+
 = Customising WP-Geo Big Map =
 
 *   You can override the CSS styles in your own theme's style.css
