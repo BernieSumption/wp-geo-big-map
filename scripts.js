@@ -1,5 +1,5 @@
 
-function MapLocation(id, lat, lng, badge_html, link, marker, line_to_post) {
+function MapLocation(id, lat, lng, badge_html, link, marker, line_to_post, alpha) {
 	this.id = id;
 	this.lat = lat;
 	this.lng = lng;
@@ -8,6 +8,7 @@ function MapLocation(id, lat, lng, badge_html, link, marker, line_to_post) {
 	this.tag = lat + "," + lng;
 	this.marker = marker
 	this.line_to_post = line_to_post;
+	this.alpha = alpha;
 }
 
 // display a full page map.
@@ -22,18 +23,20 @@ function wp_geo_big_map(conf) {
 
 	if ( GBrowserIsCompatible() ) {
 		
-		// remove rest of page contents
-		el.parentNode.removeChild(el);
-		while (document.body.children.length > 0) {
-			document.body.removeChild(document.body.children[0]);
-		}
-		document.body.appendChild(el);
-		
-		// set full screen viewport
-		var props = {height: "100%", overflow: "hidden", padding: "0px", margin: "0px"};
-		for (var prop in props) {
-			document.body.style[prop] = props[prop];
-			document.body.parentNode.style[prop] = props[prop];
+		if (conf.fullWindow) {
+			// remove rest of page contents
+			el.parentNode.removeChild(el);
+			while (document.body.children.length > 0) {
+				document.body.removeChild(document.body.children[0]);
+			}
+			document.body.appendChild(el);
+			
+			// set full screen viewport
+			var props = {height: "100%", overflow: "hidden", padding: "0px", margin: "0px"};
+			for (var prop in props) {
+				document.body.style[prop] = props[prop];
+				document.body.parentNode.style[prop] = props[prop];
+			}
 		}
 		
 		jQuery("body").append(conf.backLink);
@@ -82,11 +85,11 @@ function wp_geo_big_map(conf) {
 					}
 				}
 				var badgeHtml = '<div class="big-map-tooltip">' + count + " " + conf.combinedText + "</div>";
-				var marker = createBigMapMarker(map, center, icon, badgeHtml);
+				var marker = createBigMapMarker(map, center, icon, badgeHtml, location.alpha);
 				addTagListPopup(marker, location.tag);
 			} else {
-				var marker = createBigMapMarker(map, center, icon, location.badge_html);
-				GEvent.addListener(marker, "click", makeIframePopupCallback(marker, location.link));
+				var marker = createBigMapMarker(map, center, icon, location.badge_html, location.alpha);
+				GEvent.addListener(marker, "click", makePostClickHandler(marker, location.link));
 			}
 			points[points.length] = center;
 			bounds.extend(center);
@@ -110,6 +113,13 @@ function wp_geo_big_map(conf) {
 		if (conf.mapType && window[conf.mapType]) {
 			map.setMapType(window[conf.mapType]);
 		}
+		
+		var pane = map.getPane(G_MAP_MARKER_PANE);
+		for (var i=0; i<pane.childNodes.length; i++) {
+			if (i < conf.locations.length - 1) {
+				jQuery(pane.childNodes[i]).css({ opacity: conf.locations[i].alpha });
+			}
+		}
 	}
 	
 	function addTagListPopup(marker, tag) {
@@ -128,30 +138,36 @@ function wp_geo_big_map(conf) {
 			for (var i=0; i<links.length; i++) {
 				var originalHref = links[i].href;
 				links[i].href = "javascript:void(0);";
-				links[i].onclick = makeIframePopupCallback(marker, originalHref);
+				links[i].onclick = makePostClickHandler(marker, originalHref);
 			}
 			marker.openInfoWindow(el, {maxWidth: 1100});
 		});
 	}
 	
-	function makeIframePopupCallback(marker, link) {
-		return function(overlay, latlong) {
-			var el = document.createElement("div");
-			el.innerHTML = "loading...";
-			el.style.width = "660px";
-			el.style.height = "550px";
-			el.style.border = "none";
-			marker.openInfoWindow(el, {maxWidth: 1100});
-			var f = function() {
-				var qm_or_amp = link.indexOf("?") == -1 ? "?" : "&";
-				el.innerHTML = '<iframe src="' + link + qm_or_amp + 'postonly=true" width="660" height="550" frameborder="0"></iframe>';
-			};
-			var ver = getInternetExplorerVersion();
-			if (ver >= 6 && ver < 8) {
-				// IE don't like immediately creating an iframe. Durr.
-				setTimeout(f, 2000);
-			} else {
-				f();
+	function makePostClickHandler(marker, link) {
+		if (conf.linkTarget) {
+			return function() {
+				window.open(link, conf.linkTarget);
+			}
+		} else {
+			return function(overlay, latlong) {
+				var el = document.createElement("div");
+				el.innerHTML = "loading...";
+				el.style.width = "660px";
+				el.style.height = "550px";
+				el.style.border = "none";
+				marker.openInfoWindow(el, {maxWidth: 1100});
+				var f = function() {
+					var qm_or_amp = link.indexOf("?") == -1 ? "?" : "&";
+					el.innerHTML = '<iframe src="' + link + qm_or_amp + 'postonly=true" width="660" height="550" frameborder="0"></iframe>';
+				};
+				var ver = getInternetExplorerVersion();
+				if (ver >= 6 && ver < 8) {
+					// IE don't like immediately creating an iframe. Durr.
+					setTimeout(f, 2000);
+				} else {
+					f();
+				}
 			}
 		}
 	}
@@ -170,14 +186,13 @@ function wp_geo_big_map(conf) {
 }
 
 
-function createBigMapMarker(map, latlng, icon, badge, link)  {
+function createBigMapMarker(map, latlng, icon, badge)  {
 	var tooltip = new Tooltip(marker, badge);
 	var marker = new GMarker(latlng, icon);
 	
 	marker.latlng = latlng;
 	marker.tooltip = tooltip;
 	marker.badge = badge;
-	marker.link = link;
 	
 	GEvent.addListener(marker, "mouseover", showBigMapTooltip);
 	GEvent.addListener(marker, "mouseout", hideBigMapTooltip);

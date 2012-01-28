@@ -68,6 +68,8 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 		'lines' => true,
 		'show_days' => 0,
 		'fade_old_posts_to' => false,
+		'full_window' => true,
+		'post_link_target' => false,
 		'backlink' => get_home_url(),
 		'backtext' => 'back to blog',
 		'combined_text' => 'posts - click to view',
@@ -84,7 +86,11 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 	
 	add_action('wp_footer', 'do_shortcode_wp_geo_big_map');
 	
-	return "Big Map can't be displayed, possibly because JavaScript is turned off.";
+	return <<<END
+		<div id="travel_map" class="wpgeo_map" style="width:100%; height:100%;">
+			Big Map can't be displayed, possibly because JavaScript is turned off.
+		</div>
+END;
 }
 
 function do_shortcode_wp_geo_big_map() {
@@ -114,8 +120,6 @@ function do_shortcode_wp_geo_big_map() {
 			$fade_to = max($fade_to, 0);
 		}
 	}
-	
-	$atts['includes'] = 'post_date as foo';
 	
 	$posts = get_posts($atts);
 	
@@ -169,12 +173,13 @@ function do_shortcode_wp_geo_big_map() {
 	$backLink = big_map_js_string_literal('<a class="big-map-back" href="' . $atts['backlink'] . '">' . $atts['backtext'] . '</a>');	
 	$combined_text = big_map_js_string_literal($atts['combined_text']);
 	$polyLines = $atts['lines'] ? "true" : "false";
+	$fullWindow = $atts['full_window'] ? "true" : "false";
 	$center = is_numeric($atts['lat']) && is_numeric($atts['long']) ? "new GLatLng({$atts['lat']}, {$atts['long']})" : "false";
 	$zoom = is_numeric($atts['zoom']) ? round($atts['zoom']) : "false";
 	$mapType = big_map_js_string_literal($atts['maptype']);
+	$linkTarget = $atts['post_link_target'] ? big_map_js_string_literal($atts['post_link_target']) : "false";
 	
 	echo <<<END
-		<div id="travel_map" class="wpgeo_map" style="width:100%; height:100%;"></div>
 		<script type="text/javascript">
 		<!--
 		// locations, combinedText, backLink, polyLines
@@ -185,7 +190,9 @@ function do_shortcode_wp_geo_big_map() {
 			polyLines: {$polyLines},
 			center: {$center},
 			zoom: {$zoom},
-			mapType: {$mapType}
+			mapType: {$mapType},
+			fullWindow: {$fullWindow},
+			linkTarget: {$linkTarget}
 		});
 		
 		-->

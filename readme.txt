@@ -26,6 +26,10 @@ The full list of attributes accepted is:
 * zoom: an integer controlling the map scale. 3 shows most of the world, 10 shows a large city. The default setting is to automatically choose the highest zoom level that shows all the points on one screen.
 * mapType: a default map type. Available values are: G_NORMAL_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP
 * current_user_only: set to "1" to display only posts from the currently logged in user. If no user is logged in, the map will be empty.
+* full_window: set to "0" to disable the plugin's default behaviour of taking up the whole window. Instead, the map will occupy the size of the HTML container it is in. Note however that it is still only possible to have one map per page.
+* post_link_target: by default, clicking on a marker opens a post in an iframe without leaving the map. If this attribute is set, clicking a marker will link directly to a regular post. The value can be anything accepted by an HTML link's 'target' arrtibute. Useful values include "_self" (the current frame), "_blank" (a new window), "_top" (the topmost frame, useful if you are displaying a map in an iframe) or the name of a specific window.
+* show_days: restrict the map to only showing posts up to a certain number of days old
+* fade_old_posts_to: only valid with show_days. This can be a number between 0 and 1. Brand new posts will be fully opaque. As posts get older and approach the age where they would be removed from the map, they fade to this level of transparency. E.g. set show_days="10" fade_old_posts_to="0.5" to have posts fade to 50% transparency over 10 days before being removed.
 *   Any of the parameters accepted by [get_posts()](http://codex.wordpress.org/Function_Reference/get_posts) which in turn accepts the parameters accepted by [WP_Query()](http://codex.wordpress.org/Function_Reference/WP_Query). These parameters control which posts are displayed on the map.
 
 = A note on grouping points =
