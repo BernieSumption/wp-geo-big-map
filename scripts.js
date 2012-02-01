@@ -65,6 +65,7 @@ function wp_geo_big_map(conf) {
 		var points = [];
 		var drawnTags = {};
 		var postsById = {};
+		var markerLocations = []
 		for (var i=0; i<conf.locations.length; i++) {
 			var location = conf.locations[i];
 			postsById[location.id] = location;
@@ -91,6 +92,7 @@ function wp_geo_big_map(conf) {
 				var marker = createBigMapMarker(map, center, icon, location.badge_html, location.alpha);
 				GEvent.addListener(marker, "click", makePostClickHandler(marker, location.link));
 			}
+			markerLocations.push(location)
 			points[points.length] = center;
 			bounds.extend(center);
 		}
@@ -116,8 +118,8 @@ function wp_geo_big_map(conf) {
 		
 		var pane = map.getPane(G_MAP_MARKER_PANE);
 		for (var i=0; i<pane.childNodes.length; i++) {
-			if (i < conf.locations.length - 1) {
-				jQuery(pane.childNodes[i]).css({ opacity: conf.locations[i].alpha });
+			if (i < markerLocations.length) {
+				jQuery(pane.childNodes[i]).css({ opacity: markerLocations[i].alpha });
 			}
 		}
 	}
