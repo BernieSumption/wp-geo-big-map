@@ -5,7 +5,7 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1.3.3
+Version: 1.4.1
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
@@ -57,15 +57,23 @@ if (isset($_GET['postonly']) && $_GET['postonly'] == "true") {
 // Add [big_map] shortcode
 //
 
-global $big_map_shortcode_atts, $big_map_show_days;
+global $big_map_shortcode_atts, $big_map_show_days, $big_map_used_once;
+
+$big_map_used_once = false;
 
 add_shortcode('big_map', 'shortcode_wp_geo_big_map');
 
 function shortcode_wp_geo_big_map($atts, $content = null) {
-	global $big_map_shortcode_atts;
+	global $big_map_shortcode_atts, $big_map_used_once;
+	
+	if ($big_map_used_once) {
+		return "Only one Big Map instance is permitted per page (it wouldn't be that hard to remove this restriction. If you need multiple maps on a page, buy me a beer and I'll do it. Bernie)";
+	}
+	$big_map_used_once = true;
 	
 	$defaults = array(
 		'lines' => true,
+		'css_class' => false,
 		'show_days' => 0,
 		'fade_old_posts_to' => false,
 		'full_window' => true,
@@ -86,8 +94,10 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 	
 	add_action('wp_footer', 'do_shortcode_wp_geo_big_map');
 	
+	$cssClass = $big_map_shortcode_atts['css_class'] ? ' ' . htmlentities($big_map_shortcode_atts['css_class']) : "";
+	
 	return <<<END
-		<div id="travel_map" class="wpgeo_map" style="width:100%; height:100%;">
+		<div id="travel_map" class="wpgeo_map{$cssClass}" style="width:100%; height:100%;">
 			Big Map can't be displayed, possibly because JavaScript is turned off.
 		</div>
 END;

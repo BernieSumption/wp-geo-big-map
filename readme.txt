@@ -24,6 +24,7 @@ The full list of attributes accepted is:
 *   combined_text: the text to show when multiple posts have been combined into one marker. This text is appended to the number of posts at that location. Default is "posts - click to view",  causing the tooltip to read e.g. "8 posts - click to view"
 * lat, long: the latitude and longitude of the map center. The default behaviour is to center the map in the middle of the currently displayed points. Both of these properties must be provided to work correctly.
 * zoom: an integer controlling the map scale. 3 shows most of the world, 10 shows a large city. The default setting is to automatically choose the highest zoom level that shows all the points on one screen.
+* css_class: sets a CSS class on the map element. This is useful if you have more than one kind of map on your site and you want to style them differently
 * mapType: a default map type. Available values are: G_NORMAL_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP
 * current_user_only: set to "1" to display only posts from the currently logged in user. If no user is logged in, the map will be empty.
 * full_window: set to "0" to disable the plugin's default behaviour of taking up the whole window. Instead, the map will occupy the size of the HTML container it is in. Note however that it is still only possible to have one map per page.
