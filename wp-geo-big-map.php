@@ -5,7 +5,7 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1.4.1
+Version: 1.4.2
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
@@ -94,10 +94,8 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 	
 	add_action('wp_footer', 'do_shortcode_wp_geo_big_map');
 	
-	$cssClass = $big_map_shortcode_atts['css_class'] ? ' ' . htmlentities($big_map_shortcode_atts['css_class']) : "";
-	
 	return <<<END
-		<div id="travel_map" class="wpgeo_map{$cssClass}" style="width:100%; height:100%;">
+		<div id="travel_map" class="wpgeo_map" style="width:100%; height:100%;">
 			Big Map can't be displayed, possibly because JavaScript is turned off.
 		</div>
 END;
@@ -188,6 +186,7 @@ function do_shortcode_wp_geo_big_map() {
 	$zoom = is_numeric($atts['zoom']) ? round($atts['zoom']) : "false";
 	$mapType = big_map_js_string_literal($atts['maptype']);
 	$linkTarget = $atts['post_link_target'] ? big_map_js_string_literal($atts['post_link_target']) : "false";
+	$cssClass = $atts['css_class'] ? big_map_js_string_literal($atts['css_class']) : "false";
 	
 	echo <<<END
 		<script type="text/javascript">
@@ -202,7 +201,8 @@ function do_shortcode_wp_geo_big_map() {
 			zoom: {$zoom},
 			mapType: {$mapType},
 			fullWindow: {$fullWindow},
-			linkTarget: {$linkTarget}
+			linkTarget: {$linkTarget},
+			cssClass: {$cssClass}
 		});
 		
 		-->

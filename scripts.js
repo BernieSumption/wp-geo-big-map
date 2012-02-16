@@ -20,6 +20,10 @@ function wp_geo_big_map(conf) {
 		alert("Can't display big map because Google Maps is not available. Is the WP Geo plugin installed?");
 		return;
 	}
+	
+	if (conf.cssClass) {
+		jQuery("body").addClass(conf.cssClass);
+	}
 
 	if ( GBrowserIsCompatible() ) {
 		
@@ -37,9 +41,9 @@ function wp_geo_big_map(conf) {
 				document.body.style[prop] = props[prop];
 				document.body.parentNode.style[prop] = props[prop];
 			}
-		}
 		
-		jQuery("body").append(conf.backLink);
+			jQuery("body").append(conf.backLink);
+		}
 		
 		jQuery("body").append('<div id="big-map-tooltip"></div>');
 		window.bigMapTooltip = jQuery("#big-map-tooltip");
