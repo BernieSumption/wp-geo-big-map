@@ -17,7 +17,7 @@ function wp_geo_big_map(conf) {
 	var el = document.getElementById("travel_map");
 	
 	if (!window.GBrowserIsCompatible) {
-		alert("Can't display big map because Google Maps is not available. Is the WP Geo plugin installed?");
+		alert("Can't display big map because Google Maps is not available. This normally means that you haven't yet installed WP Geo, or that you haven't activated it with the Google API key.");
 		return;
 	}
 	
@@ -140,6 +140,10 @@ function wp_geo_big_map(conf) {
 			}
 			var el = document.createElement("div");
 			el.innerHTML = badgeHtml.join("");
+			el.style.overflowY = "auto";
+			el.style.overflowX = "none";
+			el.style.height = "100%";
+			el.style.maxHeight = "400px";
 			var links = el.getElementsByTagName("a");
 			for (var i=0; i<links.length; i++) {
 				var originalHref = links[i].href;
@@ -221,9 +225,13 @@ function hideBigMapTooltip() {
 }
 
 function positionBigMapTooltip(x, y) {
+	if (navigator.userAgent.match(/OS [_0-9]+ like Mac OS X/i)) {
+		return; // otherwise this method breaks on iOS
+	}
 	var width = bigMapTooltip.width();
+	var height = bigMapTooltip.height();
 	var left = x - Math.round(width * (1/3));
-	var top = y - bigMapTooltip.height() - 15;
+	var top = y - height - 15;
 	if (left < 5) {
 		left = 5;
 	}

@@ -5,11 +5,11 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1.4.2
+Version: 1.4.5
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
-Tested up to: 3.3.1
+Tested up to: 3.4.1
 License: FreeBSD license
 */
 
@@ -46,30 +46,42 @@ END;
 	}
 }
 
-wp_enqueue_style('wp-geo-big-map-style', plugins_url('style.css', __FILE__));
-wp_enqueue_script('wp-geo-big-map-scripts', plugins_url('scripts.js', __FILE__));
 
-if (isset($_GET['postonly']) && $_GET['postonly'] == "true") {
-	wp_enqueue_script('wp-geo-big-map-hide-contents', plugins_url('hide-contents.js', __FILE__));
+function wp_geo_big_map_enque_header_items() {
+
+    // General styles
+    wp_enqueue_style('wp-geo-big-map-style', plugins_url('style.css', __FILE__));
+
+    // script to display big map on post pages
+    $apitype = "googlemapsv2";
+    $wp_geo_options = get_option( 'wp_geo_options' );
+    if (isset($wp_geo_options["public_api"])) {
+        $apitype = $wp_geo_options["public_api"];
+    }
+	if ($apitype != "googlemapsv2" && $apitype != "googlemapsv3") {
+	    define('WPGEO_BIG_MAP_UNSUPPORTED_API', true);
+	} else {
+	    wp_enqueue_script('wp-geo-big-map-scripts', plugins_url("big-map-{$apitype}.js", __FILE__));
+	}
+    
+    // script to hide non-content elements on post pages in iframes
+    if (isset($_GET['postonly']) && $_GET['postonly'] == "true") {
+        wp_enqueue_script('wp-geo-big-map-hide-contents', plugins_url('hide-contents.js', __FILE__));
+    }
 }
+
+wp_geo_big_map_enque_header_items();
 
 //
 // Add [big_map] shortcode
 //
 
-global $big_map_shortcode_atts, $big_map_show_days, $big_map_used_once;
-
-$big_map_used_once = false;
+global $big_map_shortcode_atts, $big_map_show_days;
 
 add_shortcode('big_map', 'shortcode_wp_geo_big_map');
 
 function shortcode_wp_geo_big_map($atts, $content = null) {
-	global $big_map_shortcode_atts, $big_map_used_once;
-	
-	if ($big_map_used_once) {
-		return "Only one Big Map instance is permitted per page (it wouldn't be that hard to remove this restriction. If you need multiple maps on a page, buy me a beer and I'll do it. Bernie)";
-	}
-	$big_map_used_once = true;
+	global $big_map_shortcode_atts;
 	
 	$defaults = array(
 		'lines' => true,
@@ -88,15 +100,23 @@ function shortcode_wp_geo_big_map($atts, $content = null) {
 		'long' => false,
 		'zoom' => false,
 		'maptype' => false,
-		'current_user_only' => false
+		'current_user_only' => false,
+		'post_type' => 'post,page'
 	);
 	$big_map_shortcode_atts = wp_parse_args($atts, $defaults);
 	
 	add_action('wp_footer', 'do_shortcode_wp_geo_big_map');
 	
+	
+	if (defined('WPGEO_BIG_MAP_UNSUPPORTED_API')) {
+	    return "Can't display Big Map - unrecognised maps api type $apitype";
+	}
+	
 	return <<<END
 		<div id="travel_map" class="wpgeo_map" style="width:100%; height:100%;">
-			Big Map can't be displayed, possibly because JavaScript is turned off.
+			Big Map can't be displayed. This is almost always because JavaScript is turned off, or there
+			are JavaScript errors on this page preventing the map script from running (check the browser
+			console for error messages)
 		</div>
 END;
 }
@@ -106,6 +126,7 @@ function do_shortcode_wp_geo_big_map() {
 	if (is_feed()) {
 		return '';
 	}
+	
 	
 	$atts = $big_map_shortcode_atts;
 	
@@ -128,6 +149,8 @@ function do_shortcode_wp_geo_big_map() {
 			$fade_to = max($fade_to, 0);
 		}
 	}
+	
+	$atts['post_type'] = explode(',', $atts['post_type']);
 	
 	$posts = get_posts($atts);
 	
