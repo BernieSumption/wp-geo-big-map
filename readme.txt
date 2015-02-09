@@ -1,8 +1,6 @@
 === WP Geo Big Map ===
 Contributors: berniecode
 Tags: geo, wp-geo, map
-Requires at least: 3.1
-Tested up to: 3.2.1
 
 Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
 
@@ -18,21 +16,21 @@ The above will show the most recent 10 posts by the user "bernie" that are tagge
 
 The full list of attributes accepted is:
 
-*   lines: set to "0" to hide polylines between pins, default is "1" which shows lines
-*   backLink: the URL of the back link, default is the blog home page
-*   backText: the text of the back link, default is "back to blog"
-*   combined_text: the text to show when multiple posts have been combined into one marker. This text is appended to the number of posts at that location. Default is "posts - click to view",  causing the tooltip to read e.g. "8 posts - click to view"
+* lines: set to "0" to hide polylines between pins, default is "1" which shows lines
+* backLink: the URL of the back link, default is the blog home page
+* backText: the text of the back link, default is "back to blog"
+* combined_text: the text to show when multiple posts have been combined into one marker. This text is appended to the number of posts at that location. Default is "posts - click to view",  causing the tooltip to read e.g. "8 posts - click to view"
 * lat, long: the latitude and longitude of the map center. The default behaviour is to center the map in the middle of the currently displayed points. Both of these properties must be provided to work correctly.
-* zoom: an integer controlling the map scale. 3 shows most of the world, 10 shows a large city. The default setting is to automatically choose the highest zoom level that shows all the points on one screen.
+* zoom: an integer controlling the map scale. 3 shows most of the world, 10 shows a large city. The default setting is to automatically choose the highest zoom level that shows all the points on one screen. NOTE: This setting is only valid if lat and long are specified.
 * css_class: sets a CSS class on the map element. This is useful if you have more than one kind of map on your site and you want to style them differently
-* mapType: a default map type. Available values are: G_NORMAL_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP
+* mapType: a default map type. Available values are: HYBRID, ROADMAP	, SATELLITE, TERRAIN (for Maps API 3) or G_NORMAL_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP (for maps API 2)
 * current_user_only: set to "1" to display only posts from the currently logged in user. If no user is logged in, the map will be empty.
 * full_window: set to "0" to disable the plugin's default behaviour of taking up the whole window. Instead, the map will occupy the size of the HTML container it is in. Note however that it is still only possible to have one map per page.
-* post_link_target: by default, clicking on a marker opens a post in an iframe without leaving the map. If this attribute is set, clicking a marker will link directly to a regular post. The value can be anything accepted by an HTML link's 'target' arrtibute. Useful values include "_self" (the current frame), "_blank" (a new window), "_top" (the topmost frame, useful if you are displaying a map in an iframe) or the name of a specific window.
+* post_link_target: by default, clicking on a marker opens a post in an iframe without leaving the map. If this attribute is set, clicking a marker will link directly to a regular post. The value can be anything accepted by an HTML link's 'target' attribute. Useful values include "_self" (the current frame), "_blank" (a new window), "_top" (the topmost frame, useful if you are displaying a map in an iframe) or the name of a specific window.
 * show_days: restrict the map to only showing posts up to a certain number of days old
-* fade_old_posts_to: only valid with show_days. This can be a number between 0 and 1. Brand new posts will be fully opaque. As posts get older and approach the age where they would be removed from the map, they fade to this level of transparency. E.g. set show_days="10" fade_old_posts_to="0.5" to have posts fade to 50% transparency over 10 days before being removed.
+* fade_old_posts_to: This option only works on maps API v2. Maps API v3 works differently, and it's not possible to fade markers. The show_days attribute must be specified in order to use fade_old_posts_to. This can be a number between 0 and 1. Brand new posts will be fully opaque. As posts get older and approach the age where they would be removed from the map, they fade to this level of transparency. E.g. set show_days="10" fade_old_posts_to="0.5" to have posts fade to 50% transparency over 10 days before being removed.
 * post_type: a csv list of wordpress post types to display, e.g. "post,page,my-custom-type"
-*   Any of the parameters accepted by [get_posts()](http://codex.wordpress.org/Function_Reference/get_posts) which in turn accepts the parameters accepted by [WP_Query()](http://codex.wordpress.org/Function_Reference/WP_Query). These parameters control which posts are displayed on the map.
+* Any of the parameters accepted by [get_posts()](http://codex.wordpress.org/Function_Reference/get_posts) which in turn accepts the parameters accepted by [WP_Query()](http://codex.wordpress.org/Function_Reference/WP_Query). These parameters control which posts are displayed on the map.
 
 = A note on grouping points =
 

@@ -25,112 +25,112 @@ function wp_geo_big_map(conf) {
 		jQuery("body").addClass(conf.cssClass);
 	}
 		
-    if (conf.fullWindow) {
-        // remove rest of page contents
-        el.parentNode.removeChild(el);
-        while (document.body.children.length > 0) {
-            document.body.removeChild(document.body.children[0]);
-        }
-        document.body.appendChild(el);
-        
-        // set full screen viewport
-        var props = {height: "100%", overflow: "hidden", padding: "0px", margin: "0px"};
-        for (var prop in props) {
-            document.body.style[prop] = props[prop];
-            document.body.parentNode.style[prop] = props[prop];
-        }
-    
-        jQuery("body").append(conf.backLink);
-    }
-    
-    jQuery("body").append('<div id="big-map-tooltip"></div>');
-    window.bigMapTooltip = jQuery("#big-map-tooltip");
-    jQuery("body").mousemove(function(e) {
-        positionBigMapTooltip(e.pageX, e.pageY);
-    });
-    
-    var tagCounts = {}; // map of "lat,long" to 
-    for (var i=0; i<conf.locations.length; i++) {
-        var location = conf.locations[i];
-        if (!tagCounts[location.tag]) {
-            tagCounts[location.tag] = 1;
-        } else {
-            tagCounts[location.tag] ++;
-        }
-    }
+	if (conf.fullWindow) {
+		// remove rest of page contents
+		el.parentNode.removeChild(el);
+		while (document.body.children.length > 0) {
+			document.body.removeChild(document.body.children[0]);
+		}
+		document.body.appendChild(el);
+		
+		// set full screen viewport
+		var props = {height: "100%", overflow: "hidden", padding: "0px", margin: "0px"};
+		for (var prop in props) {
+			document.body.style[prop] = props[prop];
+			document.body.parentNode.style[prop] = props[prop];
+		}
+	
+		jQuery("body").append(conf.backLink);
+	}
+	
+	jQuery("body").append('<div id="big-map-tooltip"></div>');
+	window.bigMapTooltip = jQuery("#big-map-tooltip");
+	jQuery("body").mousemove(function(e) {
+		positionBigMapTooltip(e.pageX, e.pageY);
+	});
+	
+	var tagCounts = {}; // map of "lat,long" to 
+	for (var i=0; i<conf.locations.length; i++) {
+		var location = conf.locations[i];
+		if (!tagCounts[location.tag]) {
+			tagCounts[location.tag] = 1;
+		} else {
+			tagCounts[location.tag] ++;
+		}
+	}
 
-    // draw markers
-    var bounds = new google.maps.LatLngBounds();
-    
-  /*new google.maps.Map(el,
-      {
-    zoom: 8,
-    center: new google.maps.LatLng(-34.397, 150.644),
-    mapTypeId: 
-  });*/
-    map = new google.maps.Map(el, {mapTypeId: google.maps.MapTypeId.TERRAIN});
-    
-    var points = [];
-    var drawnTags = {};
-    var postsById = {};
-    var markerLocations = [];
+	// draw markers
+	var bounds = new google.maps.LatLngBounds();
+	
+	map = new google.maps.Map(el, {mapTypeId: google.maps.MapTypeId.TERRAIN});
+	
+	var points = [];
+	var drawnTags = {};
+	var postsById = {};
+	var markerLocations = [];
 
-    for (var i=0; i<conf.locations.length; i++) {
-        var location = conf.locations[i];
-        postsById[location.id] = location;
-        var center = new google.maps.LatLng(location.lat, location.lng);
-        // HERE
-        // CUSTOM ICON SUPPORT OMMITTED
-        if (location.tag && tagCounts[location.tag] > 1) {
-            if (drawnTags[location.tag]) {
-                continue;
-            }
-            drawnTags[location.tag] = true;
-            var count = 0;
-            for (var j=0; j<conf.locations.length; j++) {
-                if (conf.locations[j].tag == location.tag) {
-                    count ++;
-                }
-            }
-            var badgeHtml = '<div class="big-map-tooltip">' + count + " " + conf.combinedText + "</div>";
-            var marker = createBigMapMarker(map, center, null, badgeHtml, location.alpha);
-            addTagListPopup(marker, location.tag);
-        } else {
-            var marker = createBigMapMarker(map, center, null, location.badge_html, location.alpha);
-            google.maps.event.addListener(marker, "click", makePostClickHandler(marker, location.link));
-        }
-        markerLocations.push(location)
-        points[points.length] = center;
-        bounds.extend(center);
-    }
-    if (conf.polyLines) {
-        //!!!var polyline = new GPolyline(points, "#FFFFFF", 3, 0.7);
-        //!!!map.addOverlay(polyline);
-    }
-    for (var i=0; i<conf.locations.length; i++) {
-        var location = conf.locations[i];
-        if (location.line_to_post) {
-            var target = postsById[location.line_to_post.id]
-            if (target && target.id != location.id) {
-                var points =  [new google.maps.LatLng(location.lat, location.lng), new google.maps.LatLng(target.lat, target.lng)]
-                //!!!map.addOverlay(new GPolyline(points, location.line_to_post.color, 3, 0.7));
-            }
-        }
-    }
-    map.fitBounds(bounds);
-    if (conf.zoom) {
-        map.setZoom(conf.zoom)
-    }
-    if (conf.mapType && google.maps.MapTypeId[conf.mapType]) {
-        map.setMapTypeId(google.maps.MapTypeId[conf.mapType]);
-    }
-    
-    //!!!var pane = map.getPane(G_MAP_MARKER_PANE);
-    //!!!for (var i=0; i<pane.childNodes.length; i++) {
-    //!!!    if (i < markerLocations.length) {
-    //!!!        jQuery(pane.childNodes[i]).css({ opacity: markerLocations[i].alpha });
-    //!!!    }
-    //!!!}
+	for (var i=0; i<conf.locations.length; i++) {
+		var location = conf.locations[i];
+		postsById[location.id] = location;
+		var center = new google.maps.LatLng(location.lat, location.lng);
+		if (location.tag && tagCounts[location.tag] > 1) {
+			if (drawnTags[location.tag]) {
+				continue;
+			}
+			drawnTags[location.tag] = true;
+			var count = 0;
+			for (var j=0; j<conf.locations.length; j++) {
+				if (conf.locations[j].tag == location.tag) {
+					count ++;
+				}
+			}
+			var badgeHtml = '<div class="big-map-tooltip">' + count + " " + conf.combinedText + "</div>";
+			var marker = createBigMapMarker(map, center, location.marker, badgeHtml);
+			addTagListPopup(marker, location.tag);
+		} else {
+			var marker = createBigMapMarker(map, center, location.marker, location.badge_html);
+			google.maps.event.addListener(marker, "click", makePostClickHandler(marker, location.link));
+		}
+		markerLocations.push(location)
+		points[points.length] = center;
+		bounds.extend(center);
+	}
+	if (conf.polyLines) {
+		new google.maps.Polyline({
+			path: points,
+			strokeColor: "#FFFFFF",
+			strokeWeight: 3,
+			strokeOpacity: 0.7,
+			map: map
+		});
+	}
+	for (var i=0; i<conf.locations.length; i++) {
+		var location = conf.locations[i];
+		if (location.line_to_post) {
+			var target = postsById[location.line_to_post.id]
+			if (target && target.id != location.id) {
+				var points =  [new google.maps.LatLng(location.lat, location.lng), new google.maps.LatLng(target.lat, target.lng)]
+				new google.maps.Polyline({
+					path: points,
+					strokeColor: location.line_to_post.color,
+					strokeWeight: 3,
+					strokeOpacity: 0.7,
+					map: map
+				});
+			}
+		}
+	}
+	if (conf.center) {
+	    map.setCenter(conf.center);
+	    if (conf.zoom) {
+		    map.setZoom(conf.zoom);
+		}
+	} else {
+    	map.fitBounds(bounds);
+	}
+	if (conf.mapType && google.maps.MapTypeId[conf.mapType]) {
+		map.setMapTypeId(google.maps.MapTypeId[conf.mapType]);
+	}
 	
 	function addTagListPopup(marker, tag) {
 		google.maps.event.addListener(marker, "click", function(overlay, latlong) {
@@ -160,12 +160,12 @@ function wp_geo_big_map(conf) {
 	
 	var infoWindow;
 	function showInfoWindow(el, marker) {
-	    if (infoWindow) {
-	        infoWindow.close();
-	    }
-        infoWindow = new google.maps.InfoWindow({content: el, maxWidth: 1100});
-        infoWindow.open(map, marker)
-    }
+		if (infoWindow) {
+			infoWindow.close();
+		}
+		infoWindow = new google.maps.InfoWindow({content: el, maxWidth: 1100});
+		infoWindow.open(map, marker)
+	}
 	
 	function makePostClickHandler(marker, link) {
 		if (conf.linkTarget) {
@@ -179,7 +179,7 @@ function wp_geo_big_map(conf) {
 				el.style.width = "660px";
 				el.style.height = "550px";
 				el.style.border = "none";
-			    showInfoWindow(el, marker);
+				showInfoWindow(el, marker);
 				var f = function() {
 					var qm_or_amp = link.indexOf("?") == -1 ? "?" : "&";
 					el.innerHTML = '<iframe src="' + link + qm_or_amp + 'postonly=true" width="660" height="550" frameborder="0"></iframe>';
@@ -210,14 +210,19 @@ function wp_geo_big_map(conf) {
 
 
 function createBigMapMarker(map, latlng, icon, badge)  {
+	
+	var options = {
+		position: latlng,
+		map: map
+	};
+	if (icon && window[icon]) {
+		options.icon = window[icon];
+	}
+	
+	var marker = new google.maps.Marker(options);
+	
 	var tooltip = new Tooltip(marker, badge);
 	
-    var marker = new google.maps.Marker({
-        position: latlng,
-        map: map
-//        anchorPoint: new GPoint(icon.iconSize.width / 2, -10);
-    });
-    
 	marker.tooltip = tooltip;
 	marker.badge = badge;
 	
@@ -229,10 +234,8 @@ function createBigMapMarker(map, latlng, icon, badge)  {
 }
 
 function showBigMapTooltip(e) {
-	//!!!if(!(this.isInfoWindowOpen || this.isHidden())) {	
-		positionBigMapTooltip(e.pageX, e.pageY);
-		bigMapTooltip.html(this.badge).show();
-	//}
+	positionBigMapTooltip(e.pageX, e.pageY);
+	bigMapTooltip.html(this.badge).show();
 }
 
 function hideBigMapTooltip() {

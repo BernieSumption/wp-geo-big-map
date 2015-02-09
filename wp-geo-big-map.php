@@ -5,11 +5,11 @@
 Plugin Name: WP Geo Big Map
 Plugin URI: http://berniesumption.com/
 Description: Adds a full screen map to WP-Geo. Install WP-Geo, then this plugin, then place the shortcode [big_map] on any page.
-Version: 1.4.5
+Version: 1.5.3
 Author: Bernie Sumption
 Author URI: http://berniesumption.com/
 Minimum WordPress Version Required: 3.1
-Tested up to: 3.4.1
+Tested up to: 3.5.1
 License: FreeBSD license
 */
 
@@ -53,7 +53,7 @@ function wp_geo_big_map_enque_header_items() {
     wp_enqueue_style('wp-geo-big-map-style', plugins_url('style.css', __FILE__));
 
     // script to display big map on post pages
-    $apitype = "googlemapsv2";
+    $apitype = "googlemapsv3";
     $wp_geo_options = get_option( 'wp_geo_options' );
     if (isset($wp_geo_options["public_api"])) {
         $apitype = $wp_geo_options["public_api"];
@@ -205,7 +205,7 @@ function do_shortcode_wp_geo_big_map() {
 	$combined_text = big_map_js_string_literal($atts['combined_text']);
 	$polyLines = $atts['lines'] ? "true" : "false";
 	$fullWindow = $atts['full_window'] ? "true" : "false";
-	$center = is_numeric($atts['lat']) && is_numeric($atts['long']) ? "new GLatLng({$atts['lat']}, {$atts['long']})" : "false";
+	$center = is_numeric($atts['lat']) && is_numeric($atts['long']) ? "new LatLng({$atts['lat']}, {$atts['long']})" : "false";
 	$zoom = is_numeric($atts['zoom']) ? round($atts['zoom']) : "false";
 	$mapType = big_map_js_string_literal($atts['maptype']);
 	$linkTarget = $atts['post_link_target'] ? big_map_js_string_literal($atts['post_link_target']) : "false";
@@ -215,6 +215,7 @@ function do_shortcode_wp_geo_big_map() {
 		<script type="text/javascript">
 		<!--
 		// locations, combinedText, backLink, polyLines
+		var LatLng = window.GLatLng || (window.google && google.maps.LatLng) || function(){} ;
 		wp_geo_big_map({
 			locations: {$travelMapPoints},
 			combinedText: {$combined_text},
